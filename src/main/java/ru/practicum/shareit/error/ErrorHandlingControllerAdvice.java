@@ -11,7 +11,6 @@ import ru.practicum.shareit.user.exception.UserEmailExistedException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
