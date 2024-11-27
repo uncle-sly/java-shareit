@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.model.User;
 import java.util.*;
 
 @Repository
-public class InMemoryUserRepositoryImpl implements UserRepository{
+public class InMemoryUserRepositoryImpl implements UserRepository {
 
     private final Map<Long, User> users = new HashMap<>();
     private final Set<String> emails = new HashSet<>();

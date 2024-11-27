@@ -1,12 +1,15 @@
 package ru.practicum.shareit.item.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jdk.jfr.BooleanFlag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.user.validation.OnCreate;
 import ru.practicum.shareit.user.validation.OnUpdate;
 
 /**
@@ -16,18 +19,21 @@ import ru.practicum.shareit.user.validation.OnUpdate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDto {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @NotNull(groups = OnUpdate.class)
     private Long id;
 
-    @NotBlank(message = "name cannot be blank")
-    @NotEmpty(message = "name cannot be empty")
+    @NotBlank(groups = OnCreate.class, message = "name не может состоять из пробелов")
+    @NotEmpty(groups = OnCreate.class, message = "name не может быть пустым")
     private String name;
 
-    @Size(max = 256, message = "Description cannot be longer than 256 characters.")
+    @Size(max = 256, message = "Описание не может быть длиннее 256 символов.")
+    @NotBlank(groups = OnCreate.class, message = "name не может состоять из пробелов")
+    @NotEmpty(groups = OnCreate.class, message = "name не может быть пустым")
     private String description;
 
-    @NotBlank
-    @NotEmpty
+    @BooleanFlag
+    @NotNull(groups = OnCreate.class, message = "name не может быть пустым")
     private Boolean available;
 
 }

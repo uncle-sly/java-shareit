@@ -13,44 +13,43 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper = UserMapper.INSTANCE;
     private final UserRepository userRepository;
 
     public List<UserDto> getAll() {
-
-        return userMapper.toItemDTOList(userRepository.getAll());
+        return userMapper.toUserDtoList(userRepository.getAll());
     }
 
-   public UserDto getById(Long id) {
-
-       return userMapper.toUserDto(userRepository.getById(id)
-               .orElseThrow(() -> new UserNotFoundException("Пользователь c ID - " + id + ", не найден.")));
-   }
+    public UserDto getById(Long id) {
+        return userMapper.toUserDto(userRepository.getById(id)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь c ID - " + id + ", не найден.")));
+    }
 
     public UserDto create(UserDto userDto) {
 
-        if (userRepository.checkEmail(userDto.getEmail())) throw new UserEmailExistedException("Такой email уже используется.");
+        if (userRepository.checkEmail(userDto.getEmail()))
+            throw new UserEmailExistedException("Такой email уже используется.");
+
         return userMapper.toUserDto(userRepository.create(userMapper.toUser(userDto)));
     }
 
     public UserDto update(Long id, UserDto userDto) {
-       User user = userRepository.getById(id)
+        User user = userRepository.getById(id)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь c ID - " + id + ", не найден."));
 
-        if (userRepository.checkEmail(userDto.getEmail())) throw new UserEmailExistedException("Такой email уже используется.");
+        if (userRepository.checkEmail(userDto.getEmail()))
+            throw new UserEmailExistedException("Такой email уже используется.");
 
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
 
-       user.setName(userDto.getName());
-       user.setEmail(userDto.getEmail());
-
-       return userMapper.toUserDto(userRepository.update(user));
+        return userMapper.toUserDto(userRepository.update(user));
     }
 
     public void delete(Long id) {
-    userRepository.delete(id);
+        userRepository.delete(id);
     }
-
 
 }
