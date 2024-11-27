@@ -28,37 +28,32 @@ public class UserController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<UserDto> getAll() {
-        //log
         return userService.getAll();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserDto getById(@PathVariable("id") long id) {
-        //log
         return userService.getById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@Validated (OnCreate.class) @RequestBody UserDto userDto) {
-        log.info("POST / Users --> Create User: {} - started", userDto);
-        UserDto created = userService.create(userDto);
-        log.info("POST / Users <-- Create User: {} - ended", userDto);
-        return created;
+        //        log.info("POST / Users --> Create User: {} - started", userDto);
+        //        log.info("POST / Users <-- Create User: {} - ended", userDto);
+        return userService.create(userDto);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserDto update(@PathVariable("id") long id, @Valid @Validated(OnUpdate.class) @RequestBody UserDto userDto) {
-        //log
         return userService.update(id, userDto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") long id) {
-        //log
         userService.delete(id);
     }
 
