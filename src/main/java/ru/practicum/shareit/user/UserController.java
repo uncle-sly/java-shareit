@@ -42,8 +42,10 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@Validated (OnCreate.class) @RequestBody UserDto userDto) {
-        //log
-        return userService.create(userDto);
+        log.info("POST / Users --> Create User: {} - started", userDto);
+        UserDto created = userService.create(userDto);
+        log.info("POST / Users <-- Create User: {} - ended", userDto);
+        return created;
     }
 
     @PatchMapping("/{id}")
