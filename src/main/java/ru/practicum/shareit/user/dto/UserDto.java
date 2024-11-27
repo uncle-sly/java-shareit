@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.user.validation.OnCreate;
-import ru.practicum.shareit.user.validation.OnUpdate;
+import ru.practicum.shareit.validation.OnCreate;
+import ru.practicum.shareit.validation.OnUpdate;
 
 @Data
 @AllArgsConstructor
