@@ -10,7 +10,7 @@ public class ShareItApp {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ShareItApp.class, args);
-		log.info("Current working directory: " + System.getProperty("user.dir"));
+		log.info("Current working directory: {}", System.getProperty("user.dir"));
 	}
 
 }

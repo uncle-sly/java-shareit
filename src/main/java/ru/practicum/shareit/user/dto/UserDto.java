@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,13 +19,11 @@ public class UserDto {
     @NotNull(groups = OnUpdate.class)
     private Long id;
 
-    @NotEmpty(groups = OnCreate.class)
     @NotBlank(groups = OnCreate.class)
     private String name;
 
-    @NotEmpty(groups = OnCreate.class)
     @NotBlank(groups = OnCreate.class)
-    @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "некорретный email адрес", groups = OnCreate.class)
+    @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "некорретный email адрес", groups = {OnCreate.class, OnUpdate.class})
     private String email;
 
 }

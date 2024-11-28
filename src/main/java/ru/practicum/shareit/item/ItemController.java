@@ -13,9 +13,8 @@ import ru.practicum.shareit.validation.OnUpdate;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
+import static ru.practicum.shareit.utility.Constants.USER_ID;
+
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -23,24 +22,19 @@ import java.util.List;
 @Validated
 public class ItemController {
 
-    //заголовок в константу
-    private static final String USER_ID = "X-Sharer-User-Id";
     private final ItemService itemService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> getOwnersItems(@RequestHeader(USER_ID) long userId) {
         return itemService.getOwnersItems(userId);
     }
 
     @GetMapping("/{itemId}")
-    @ResponseStatus(HttpStatus.OK)
     public ItemDto getById(@RequestHeader(USER_ID) long userId, @PathVariable("itemId") long itemId) {
         return itemService.getById(userId, itemId);
     }
 
     @GetMapping("/search")
-    @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> getSearchedItems(@RequestHeader(USER_ID) long userId, @RequestParam(name = "text") String text) {
         return itemService.getSearchedItems(userId, text);
     }
@@ -52,7 +46,6 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    @ResponseStatus(HttpStatus.OK)
     public ItemDto update(@RequestHeader(USER_ID) long userId, @PathVariable("itemId") long itemId, @Valid @Validated(OnUpdate.class) @RequestBody ItemDto itemDto) {
         return itemService.update(userId, itemId, itemDto);
     }

@@ -13,9 +13,6 @@ import ru.practicum.shareit.validation.OnUpdate;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
@@ -26,13 +23,11 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<UserDto> getAll() {
         return userService.getAll();
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public UserDto getById(@PathVariable("id") long id) {
         return userService.getById(id);
     }
@@ -40,13 +35,10 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@Validated (OnCreate.class) @RequestBody UserDto userDto) {
-        //        log.info("POST / Users --> Create User: {} - started", userDto);
-        //        log.info("POST / Users <-- Create User: {} - ended", userDto);
         return userService.create(userDto);
     }
 
     @PatchMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public UserDto update(@PathVariable("id") long id, @Valid @Validated(OnUpdate.class) @RequestBody UserDto userDto) {
         return userService.update(id, userDto);
     }

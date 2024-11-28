@@ -15,5 +15,4 @@ public interface ItemRepository {
 
     Item create(Item item);
 
-    Item update(Item item);
 }

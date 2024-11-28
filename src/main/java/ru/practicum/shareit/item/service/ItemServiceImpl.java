@@ -2,13 +2,12 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.ItemUpdateException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -20,12 +19,12 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
-    private final ItemMapper itemMapper = ItemMapper.INSTANCE;
+    private final ItemMapper itemMapper;
 
     public List<ItemDto> getOwnersItems(Long userId) {
 
         userRepository.getById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь c ID - " + userId + ", не найден."));
+                .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
 
         return itemMapper.toItemDtoList(itemRepository.getOwnersItems(userId));
     }
@@ -33,25 +32,26 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getById(Long userId, Long itemId) {
 
         userRepository.getById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь c ID - " + userId + ", не найден."));
+                .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
 
         return itemMapper.toItemDto(itemRepository.getById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Вещь c ID - " + itemId + ", не найдена.")));
+                .orElseThrow(() -> new EntityNotFoundException(Item.class, " c ID = " + itemId + ", не найдена.")));
     }
 
     public List<ItemDto> getSearchedItems(Long userId, String text) {
 
+        if (text.isBlank()) {
+            return List.of();
+        }
         userRepository.getById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь c ID - " + userId + ", не найден."));
+                .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
 
-        String searchText = String.format(text).trim().toLowerCase();
-
-        return itemMapper.toItemDtoList(!(text.isEmpty() || text.isBlank()) ? itemRepository.getSearchedItems(searchText) : List.of());
+        return itemMapper.toItemDtoList(itemRepository.getSearchedItems(text.trim().toLowerCase()));
     }
 
     public ItemDto create(Long userId, ItemDto itemDto) {
         User itemOwner = userRepository.getById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь c ID - " + userId + ", не найден."));
+                .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
         Item newItem = itemMapper.toItem(itemDto);
         newItem.setOwner(itemOwner);
 
@@ -61,21 +61,26 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto update(Long userId, Long itemId, ItemDto itemDto) {
 
         User itemOwner = userRepository.getById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь c ID - " + userId + ", не найден."));
+                .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
         Item item = itemRepository.getById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Вещь c ID - " + itemId + ", не найдена."));
+                .orElseThrow(() -> new EntityNotFoundException(Item.class, " c ID = " + itemId + ", не найдена."));
 
         if (!item.getOwner().equals(itemOwner)) {
             throw new ItemUpdateException("Не владелец! Редактировать вешь, может только ее владелец.");
         }
 
-        Item updatedItem = itemMapper.toItem(itemDto);
-        updatedItem.setId(item.getId());
-        updatedItem.setName(updatedItem.getName() != null ? updatedItem.getName() : item.getName());
-        updatedItem.setDescription(updatedItem.getDescription() != null ? updatedItem.getDescription() : item.getDescription());
-        updatedItem.setAvailable(updatedItem.getAvailable() != null ? updatedItem.getAvailable() : item.getAvailable());
-        updatedItem.setOwner(item.getOwner());
-
-        return itemMapper.toItemDto(itemRepository.update(updatedItem));
+        final String name = itemDto.getName();
+        if (name != null && !name.isBlank()) {
+            item.setName(name);
+        }
+        final String description = itemDto.getDescription();
+        if (description != null && !description.isBlank()) {
+            item.setDescription(description);
+        }
+        final Boolean available = itemDto.getAvailable();
+        if (available != null) {
+            item.setAvailable(available);
+        }
+        return itemMapper.toItemDto(item);
     }
 }

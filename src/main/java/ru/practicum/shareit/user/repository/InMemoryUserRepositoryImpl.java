@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.repository;
 
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
@@ -30,18 +31,13 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
     }
 
 
-    public User update(User user) {
-        User currentUser = users.get(user.getId());
-        if (checkEmail(currentUser.getEmail())) {
-            emails.remove(currentUser.getEmail());
-            emails.add(user.getEmail());
-        }
-        currentUser.setName(user.getName());
-        currentUser.setEmail(user.getEmail());
-        return currentUser;
+    public void updateEmails(User user, UserDto userDto) {
+        emails.remove(user.getEmail());
+        emails.add(userDto.getEmail());
     }
 
     public void delete(Long id) {
+        emails.remove(users.get(id).getEmail());
         users.remove(id);
     }
 

@@ -22,9 +22,8 @@ public class InMemoryItemRepositoryImpl implements ItemRepository {
 
     public List<Item> getSearchedItems(String text) {
         return items.values().stream()
-                .filter(Item::getAvailable)
-                .filter(item -> item.getName().toLowerCase().contains(text)
-                        || item.getDescription().toLowerCase().contains(text))
+                .filter(item -> item.getAvailable() &&
+                        (item.getName().toLowerCase().contains(text) || item.getDescription().toLowerCase().contains(text)))
                 .toList();
     }
 
@@ -32,13 +31,6 @@ public class InMemoryItemRepositoryImpl implements ItemRepository {
         item.setId(generateItemId());
         items.put(item.getId(), item);
         userItems.computeIfAbsent(item.getOwner().getId(), id -> new ArrayList<>()).add(item);
-        return item;
-    }
-
-    public Item update(Item item) {
-        items.put(item.getId(), item);
-        userItems.get(item.getOwner().getId()).remove(item);
-        userItems.get(item.getOwner().getId()).add(item);
         return item;
     }
 

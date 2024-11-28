@@ -8,8 +8,9 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.exception.EntityNotFoundException;
+import ru.practicum.shareit.item.exception.ItemUpdateException;
 import ru.practicum.shareit.user.exception.UserEmailExistedException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.util.List;
 
@@ -60,10 +61,10 @@ public class ErrorHandlingControllerAdvice {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler({UserNotFoundException.class})
+    @ExceptionHandler({EntityNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse onUserNotFoundException(final UserNotFoundException e) {
-        log.error("UserNotFoundException: {}", e.getMessage());
+    public ErrorResponse onEntityNotFoundException(final EntityNotFoundException e) {
+        log.error("EntityNotFoundException: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
@@ -74,12 +75,18 @@ public class ErrorHandlingControllerAdvice {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler({ItemUpdateException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse onItemUpdateException(final ItemUpdateException e) {
+        log.error("ItemUpdateException: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAnyException(final Throwable e) {
         log.error("Error: ", e);
         return new ErrorResponse(e.getMessage());
     }
-
 }
 
