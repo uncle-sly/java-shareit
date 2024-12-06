@@ -32,13 +32,14 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
 
 
     public void updateEmails(User user, UserDto userDto) {
-        emails.remove(user.getEmail());
-        emails.add(userDto.getEmail());
+        if (!user.getEmail().equals(userDto.getEmail())) {
+            emails.remove(user.getEmail());
+            emails.add(userDto.getEmail());
+        }
     }
 
     public void delete(Long id) {
-        emails.remove(users.get(id).getEmail());
-        users.remove(id);
+        emails.remove(users.remove(id).getEmail());
     }
 
     private long generateUserId() {

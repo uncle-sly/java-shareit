@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.getById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + id + ", не найден."));
 
-        if (userRepository.checkEmail(userDto.getEmail()) && !user.getEmail().equals(userDto.getEmail()))
+        if (!user.getEmail().equals(userDto.getEmail()) && userRepository.checkEmail(userDto.getEmail()))
             throw new UserEmailExistedException("Такой email уже используется.");
 
         final String name = userDto.getName();
