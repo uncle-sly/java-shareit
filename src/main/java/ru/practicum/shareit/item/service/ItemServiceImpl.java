@@ -23,18 +23,18 @@ public class ItemServiceImpl implements ItemService {
 
     public List<ItemDto> getOwnersItems(Long userId) {
 
-        userRepository.getById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
 
-        return itemMapper.toItemDtoList(itemRepository.getOwnersItems(userId));
+        return itemMapper.toItemDtoList(itemRepository.findByOwner(user));
     }
 
     public ItemDto getById(Long userId, Long itemId) {
 
-        userRepository.getById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
 
-        return itemMapper.toItemDto(itemRepository.getById(itemId)
+        return itemMapper.toItemDto(itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException(Item.class, " c ID = " + itemId + ", не найдена.")));
     }
 
@@ -43,26 +43,27 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return List.of();
         }
-        userRepository.getById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
 
-        return itemMapper.toItemDtoList(itemRepository.getSearchedItems(text.trim().toLowerCase()));
+        return itemMapper.toItemDtoList(
+                itemRepository.findAvailableByNameOrDescriptionContainingText(text.trim().toLowerCase()));
     }
 
     public ItemDto create(Long userId, ItemDto itemDto) {
-        User itemOwner = userRepository.getById(userId)
+        User itemOwner = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
         Item newItem = itemMapper.toItem(itemDto);
         newItem.setOwner(itemOwner);
 
-        return itemMapper.toItemDto(itemRepository.create(newItem));
+        return itemMapper.toItemDto(itemRepository.save(newItem));
     }
 
     public ItemDto update(Long userId, Long itemId, ItemDto itemDto) {
 
-        User itemOwner = userRepository.getById(userId)
+        User itemOwner = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
-        Item item = itemRepository.getById(itemId)
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException(Item.class, " c ID = " + itemId + ", не найдена."));
 
         if (!item.getOwner().equals(itemOwner)) {
@@ -81,6 +82,6 @@ public class ItemServiceImpl implements ItemService {
         if (available != null) {
             item.setAvailable(available);
         }
-        return itemMapper.toItemDto(item);
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 }
