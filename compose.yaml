@@ -1,0 +1,45 @@
+# описания сервисов (контейнеров), которые должны быть развёрнуты
+services:
+  # описание контейнера db
+  db: # имя сервиса
+    # образ, из которого должен быть запущен контейнер
+    image: postgres:16.1
+    # имя, которое нужно присвоить контейнеру
+#    container_name: postgres
+    # публикуемые порты
+    ports:
+      - "5435:5432"
+    # настройки монтирования volume
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data/
+    # переменные окружения
+    environment:
+      - POSTGRES_DB=shareit
+      - POSTGRES_USER=shareit
+      - POSTGRES_PASSWORD=54321
+    # описание способа проверки, что контейнер в рабочем состоянии
+    healthcheck:
+      # указываем, какую команду выполнить внутри контейнера для проверки его статуса
+      # в этом примере вызывается утилита pg_isready, входящая в состав PostgreSQL
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      # через какое время после запуска начинать проверку
+      timeout: 5s
+      # интервал повторов проверки
+      interval: 5s
+      # количество попыток
+      retries: 10
+
+
+#volumes:
+#  - ./volumes/postgres:/var/lib/postgresql/data/
+#  данные PostgreSQL должны храниться на хосте в локальной директории ./volumes/postgres.
+#
+
+#volumes:
+#  - pgdata:/var/lib/postgresql/data/
+#  используем named volume с именем pgdata, который управляется Docker.
+#  Docker будет создавать и управлять этим томом автоматически, и он будет храниться в стандартной директории Docker (обычно /var/lib/docker/volumes/).
+#дополнительно добавить в докер файл
+#volumes:
+#  pgdata:  # Это создаёт именованный том, который будет управляться Docker
+#    driver: local  # Можно явно указать драйвер, в данном случае это local
