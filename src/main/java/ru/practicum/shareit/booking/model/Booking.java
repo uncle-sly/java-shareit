@@ -1,20 +1,19 @@
 package ru.practicum.shareit.booking.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookings")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class Booking {
 
     @Id
@@ -22,23 +21,23 @@ public class Booking {
     private Long id;
 
     @Column(name = "start_date", nullable = false)
-    private Instant start;
+    private LocalDateTime start;
 
     @Column(name = "end_date", nullable = false)
-    private Instant end;
+    private LocalDateTime end;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "item_id")
     @ToString.Exclude
     private Item item;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User booker;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private BookingStatus bookingStatus;
+    private BookingStatus status;
 
 }

@@ -1,20 +1,18 @@
-package ru.practicum.shareit.comment.model;
+package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import ru.practicum.shareit.item.model.Item;
+import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class Comment {
 
     @Id
@@ -24,16 +22,17 @@ public class Comment {
     @Column(nullable = false)
     private String text;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "item_id")
     @ToString.Exclude
     private Item item;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User author;
 
     @Column(nullable = false)
-    private Instant created;
+    private LocalDateTime created;
+
 }

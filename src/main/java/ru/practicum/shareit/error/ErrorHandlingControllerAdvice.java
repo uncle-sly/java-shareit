@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exception.EntityNotFoundException;
-import ru.practicum.shareit.item.exception.ItemUpdateException;
+import ru.practicum.shareit.exception.EntityUpdateException;
+import ru.practicum.shareit.item.exception.ValidationException;
 import ru.practicum.shareit.user.exception.UserEmailExistedException;
 
 import java.util.List;
@@ -75,10 +76,17 @@ public class ErrorHandlingControllerAdvice {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler({ItemUpdateException.class})
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse onItemUpdateException(final ItemUpdateException e) {
-        log.error("ItemUpdateException: {}", e.getMessage());
+    @ExceptionHandler({EntityUpdateException.class})
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse onEntityUpdateException(final EntityUpdateException e) {
+        log.error("EntityUpdateException: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler({ValidationException.class})
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse onValidationException(final ValidationException e) {
+        log.error("ValidationException: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
