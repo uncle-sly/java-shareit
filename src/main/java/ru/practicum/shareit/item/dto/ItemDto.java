@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.validation.OnCreate;
 import ru.practicum.shareit.validation.OnUpdate;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,5 +30,11 @@ public class ItemDto {
 
     @NotNull(groups = OnCreate.class, message = "name не может быть пустым")
     private Boolean available;
+
+    private LocalDateTime lastBooking;
+
+    private LocalDateTime nextBooking;
+
+    private List<CommentDto> comments;
 
 }

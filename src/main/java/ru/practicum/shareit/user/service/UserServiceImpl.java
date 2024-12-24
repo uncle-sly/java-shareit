@@ -19,27 +19,28 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     public List<UserDto> getAll() {
-        return userMapper.toUserDtoList(userRepository.getAll());
+        return userMapper.toUserDtoList(userRepository.findAll());
     }
 
     public UserDto getById(Long id) {
-        return userMapper.toUserDto(userRepository.getById(id)
+        return userMapper.toUserDto(userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + id + ", не найден.")));
     }
 
     public UserDto create(UserDto userDto) {
 
-        if (userRepository.checkEmail(userDto.getEmail()))
+        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new UserEmailExistedException("Такой email уже используется.");
+        }
 
-        return userMapper.toUserDto(userRepository.create(userMapper.toUser(userDto)));
+        return userMapper.toUserDto(userRepository.save(userMapper.toUser(userDto)));
     }
 
     public UserDto update(Long id, UserDto userDto) {
-        User user = userRepository.getById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + id + ", не найден."));
 
-        if (!user.getEmail().equals(userDto.getEmail()) && userRepository.checkEmail(userDto.getEmail()))
+        if (!user.getEmail().equals(userDto.getEmail()) && userRepository.findByEmail(userDto.getEmail()).isPresent())
             throw new UserEmailExistedException("Такой email уже используется.");
 
         final String name = userDto.getName();
@@ -49,14 +50,13 @@ public class UserServiceImpl implements UserService {
 
         final String email = userDto.getEmail();
         if (email != null && !email.isBlank()) {
-            userRepository.updateEmails(user, userDto);
             user.setEmail(email);
         }
 
-        return userMapper.toUserDto(user);
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     public void delete(Long id) {
-        userRepository.delete(id);
+        userRepository.deleteById(id);
     }
 }

@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.OwnersItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.validation.OnCreate;
 import ru.practicum.shareit.validation.OnUpdate;
@@ -25,7 +27,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> getOwnersItems(@RequestHeader(USER_ID) long userId) {
+    public List<OwnersItemDto> getOwnersItems(@RequestHeader(USER_ID) long userId) {
         return itemService.getOwnersItems(userId);
     }
 
@@ -49,4 +51,11 @@ public class ItemController {
     public ItemDto update(@RequestHeader(USER_ID) long userId, @PathVariable("itemId") long itemId, @Valid @Validated(OnUpdate.class) @RequestBody ItemDto itemDto) {
         return itemService.update(userId, itemId, itemDto);
     }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@RequestHeader(USER_ID) long userId, @PathVariable("itemId") long itemId,
+                                    @Validated(OnCreate.class) @RequestBody CommentDto commentDto) {
+        return itemService.createComment(userId, itemId, commentDto);
+    }
+
 }
