@@ -17,6 +17,8 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -50,8 +52,9 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException(Booking.class, " c ID = " + bookingId + ", не найден."));
+        Optional<Long> itemOwnerId = Optional.ofNullable(booking.getItem().getOwner().getId());
 
-        if (!booking.getItem().getOwner().getId().equals(userId) || !booking.getStatus().equals(BookingStatus.WAITING)) {
+        if (!itemOwnerId.orElseThrow().equals(userId) || !Objects.equals(booking.getStatus(), BookingStatus.WAITING)) {
             throw new EntityUpdateException(Booking.class, " Booker c ID = " + booking.getBooker().getId() +
                     ", User c ID = " + userId + " Не владелец! Редактировать вещь, может только ее владелец.");
         }
@@ -67,7 +70,9 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException(Booking.class, " c ID = " + bookingId + ", не найден."));
 
-        if (!booking.getItem().getOwner().equals(user) && !booking.getBooker().equals(user)) {
+        Optional<User> itemOwner = Optional.ofNullable(booking.getItem().getOwner());
+
+        if (!itemOwner.orElseThrow().equals(user) && !Objects.equals(booking.getBooker(), user)) {
             throw new ValidationException("Доступ к данным о бронировании запрещен.");
         }
         return bookingMapper.toBookingDto(booking);
@@ -77,18 +82,17 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
 
-        return bookingMapper.toBookingDtos(bookingRepository.findBookingsByStateAndUserId(user.getId(), String.valueOf(state)));
+        return bookingMapper.toBookingDtos(bookingRepository.findBookingsByStateAndUserId(user.getId(), state.name()));
     }
 
     public List<BookingDto> getOwnerItemsBookings(Long userId, BookingState state) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
 
-        List<Long> itemsId = itemRepository.findAllByOwner_Id(user.getId()); //findAllByOwner_Id(user.getId());
-        List<Booking> bookings = bookingRepository.findAll();
+        List<Long> itemsId = itemRepository.findAllByOwner_Id(user.getId());
+        List<Booking> bookings = bookingRepository.findAllByItemIdInAndState(itemsId, state.name());
 
-        return bookingMapper.toBookingDtos(bookings.stream()
-                .filter(booking -> itemsId.contains(booking.getBooker().getId())).toList());
+        return bookingMapper.toBookingDtos(bookings);
     }
 
 }

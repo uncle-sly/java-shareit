@@ -23,6 +23,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                        (:state = 'FUTURE' AND b.start_date > CURRENT_TIMESTAMP) OR
                        (:state = 'PAST' AND b.end_date < CURRENT_TIMESTAMP)
                    )
+                    ORDER BY b.start_date DESC
             """, nativeQuery = true)
     List<Booking> findBookingsByStateAndUserId(@Param("userId") Long userId, @Param("state") String state);
 
@@ -31,5 +32,20 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking b WHERE b.item.id = :itemId ORDER BY b.start DESC")
     List<Booking> findAllByItemIdOrderByStartDateDesc(@Param("itemId") Long itemId);
 
+    @Query(value = """
+                   SELECT b.id, b.start_date, b.end_date, b.item_id, b.user_id, b.status
+                   FROM bookings b
+                   WHERE b.item_id IN :itemsId
+                   AND (
+                       :state = 'ALL' OR
+                       (:state = 'REJECTED' AND b.status = 'REJECTED') OR
+                       (:state = 'WAITING' AND b.status = 'WAITING') OR
+                       (:state = 'CURRENT' AND b.start_date <= CURRENT_TIMESTAMP AND b.end_date >= CURRENT_TIMESTAMP) OR
+                       (:state = 'FUTURE' AND b.start_date > CURRENT_TIMESTAMP) OR
+                       (:state = 'PAST' AND b.end_date < CURRENT_TIMESTAMP)
+                   )
+                   ORDER BY b.start_date DESC
+            """, nativeQuery = true)
+    List<Booking> findAllByItemIdInAndState(@Param("itemsId") List<Long> itemsId, @Param("state") String state);
 }
 

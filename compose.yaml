@@ -28,18 +28,3 @@ services:
       interval: 5s
       # количество попыток
       retries: 10
-
-
-#volumes:
-#  - ./volumes/postgres:/var/lib/postgresql/data/
-#  данные PostgreSQL должны храниться на хосте в локальной директории ./volumes/postgres.
-#
-
-#volumes:
-#  - pgdata:/var/lib/postgresql/data/
-#  используем named volume с именем pgdata, который управляется Docker.
-#  Docker будет создавать и управлять этим томом автоматически, и он будет храниться в стандартной директории Docker (обычно /var/lib/docker/volumes/).
-#дополнительно добавить в докер файл
-#volumes:
-#  pgdata:  # Это создаёт именованный том, который будет управляться Docker
-#    driver: local  # Можно явно указать драйвер, в данном случае это local

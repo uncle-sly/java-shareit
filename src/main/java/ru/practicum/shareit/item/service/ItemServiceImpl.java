@@ -36,20 +36,20 @@ public class ItemServiceImpl implements ItemService {
 
         List<OwnersItemDto> ownersItemDtos = itemMapper.toOwnersItemDtoList(itemRepository.findByOwner(user));
 
-        return ownersItemDtos.stream()
-                .peek(ownersItemDto -> {
-                    List<Booking> itemBookings = bookingRepository.findAllByItemIdOrderByStartDateDesc(ownersItemDto.getId());
-                    Booking lastBooking = itemBookings.stream()
-                            .filter(booking -> booking.getStart().isBefore(LocalDateTime.now())).findFirst().orElse(null);
-                    Booking nextBooking = itemBookings.stream()
-                            .filter(booking -> booking.getStart().isAfter(LocalDateTime.now())).findFirst().orElse(null);
+        ownersItemDtos.forEach(ownersItemDto -> {
+            List<Booking> itemBookings = bookingRepository.findAllByItemIdOrderByStartDateDesc(ownersItemDto.getId());
+            Booking lastBooking = itemBookings.stream()
+                    .filter(booking -> booking.getStart().isBefore(LocalDateTime.now())).findFirst().orElse(null);
+            Booking nextBooking = itemBookings.stream()
+                    .filter(booking -> booking.getStart().isAfter(LocalDateTime.now())).findFirst().orElse(null);
 
-                    ownersItemDto.setLastBooking(lastBooking != null ? lastBooking.getStart() : null);
-                    ownersItemDto.setNextBooking(nextBooking != null ? nextBooking.getStart() : null);
+            ownersItemDto.setLastBooking(lastBooking != null ? lastBooking.getStart() : null);
+            ownersItemDto.setNextBooking(nextBooking != null ? nextBooking.getStart() : null);
 
-                    List<Comment> comments = commentRepository.findByItem_Id(ownersItemDto.getId());
-                    ownersItemDto.setComments(commentMapper.toDtos(comments));
-                }).toList();
+            List<Comment> comments = commentRepository.findByItem_Id(ownersItemDto.getId());
+            ownersItemDto.setComments(commentMapper.toDtos(comments));
+        });
+        return ownersItemDtos;
     }
 
     public ItemDto getById(Long userId, Long itemId) {
