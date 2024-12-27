@@ -12,6 +12,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -28,6 +30,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private final ItemMapper itemMapper;
     private final CommentMapper commentMapper;
+    private final ItemRequestRepository itemRequestRepository;
 
     public List<OwnersItemDto> getOwnersItems(Long userId) {
 
@@ -80,8 +83,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto create(Long userId, ItemDto itemDto) {
         User itemOwner = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
+
+        ItemRequest itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElse(null);
         Item newItem = itemMapper.toItem(itemDto);
         newItem.setOwner(itemOwner);
+        newItem.setRequest(itemRequest);
 
         return itemMapper.toItemDto(itemRepository.save(newItem));
     }

@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS requests (
     id          BIGSERIAL PRIMARY KEY,
     description TEXT      NOT NULL,
-    user_id     BIGINT    NOT NULL REFERENCES users(id) ON DELETE CASCADE
+    user_id     BIGINT    NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created     TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS items (
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS items (
     description TEXT            NOT NULL,
     available   BOOLEAN         NOT NULL DEFAULT TRUE,
     user_id     BIGINT          NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    request_id  BIGINT          --NOT NULL REFERENCES requests(id) ON DELETE CASCADE
+    request_id  BIGINT          REFERENCES requests(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS bookings (

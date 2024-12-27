@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "requests")
 @Data
@@ -20,9 +22,11 @@ public class ItemRequest {
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User user;
+
+    private LocalDateTime created;
 
 }
