@@ -70,6 +70,14 @@ public class ErrorHandlingControllerAdvice {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse onIllegalArgumentException(final IllegalArgumentException e) {
+        log.error("IllegalArgumentException: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleAnyException(final Throwable e) {

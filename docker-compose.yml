@@ -25,7 +25,7 @@ services:
 
   db:
     image: postgres:16.1
-    container_name: postgres
+    container_name: postgres2
     ports:
       - "6541:5432"
     environment:
