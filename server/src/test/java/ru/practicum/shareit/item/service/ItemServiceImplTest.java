@@ -16,7 +16,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.OwnersItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -35,7 +34,6 @@ class ItemServiceImplTest {
     private final ItemService itemService;
     private final BookingService bookingService;
     private final UserService userService;
-    private final ItemRequestService itemRequestService;
 
     private final EntityManager entityManager;
 
@@ -88,7 +86,6 @@ class ItemServiceImplTest {
 
     @Test
     void shouldGetSearchedItems() {
-
         List<ItemDto> searchedItems = itemService.getSearchedItems(userDto.getId(), "guitar");
         assertThat(searchedItems, notNullValue());
         assertThat(searchedItems.size(), equalTo(1));
@@ -121,7 +118,6 @@ class ItemServiceImplTest {
 
     @Test
     void shouldUpdateItem() {
-
         itemDto.setName("Stratocaster");
         itemDto.setDescription("best guitar");
         itemDto.setAvailable(true);
@@ -139,7 +135,6 @@ class ItemServiceImplTest {
 
     @Test
     void shouldCreateComment() {
-
         BookingDto bookingDto = new BookingDto(1L, wasMinus, was, BookingStatus.WAITING, itemDto.getId(), item, booker);
         bookingDto = bookingService.create(userDto.getId(), bookingDto);
         bookingService.update(userDto.getId(), bookingDto.getId(), true);
