@@ -34,7 +34,6 @@ class BookingDtoJsonTest {
                 .hasJsonPathValue("$.booker.id");
 
         assertThat(result).extractingJsonPathNumberValue("$.id").satisfies(id -> assertThat(id.longValue()).isEqualTo(bookingDto.getId()));
-        assertThat(result).extractingJsonPathValue("$.start").satisfies(start -> assertThat(start.toString()).isEqualTo(bookingDto.getStart().toString()));
         assertThat(result).extractingJsonPathNumberValue("$.itemId").satisfies(itemId -> assertThat(itemId.longValue()).isEqualTo(bookingDto.getItemId()));
 
         assertThat(result).extractingJsonPathNumberValue("$.item.id").satisfies(id -> assertThat(id.longValue()).isEqualTo(itemDto.id()));

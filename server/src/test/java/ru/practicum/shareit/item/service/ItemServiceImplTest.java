@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exception.EntityUpdateException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.OwnersItemDto;
@@ -25,7 +26,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -39,7 +40,9 @@ class ItemServiceImplTest {
 
     private LocalDateTime was;
     private LocalDateTime wasMinus;
+    private LocalDateTime will;
     private UserDto userDto;
+    private UserDto userDto2;
     private ItemDto itemDto;
     private CommentDto commentDto;
     private BookingDto.BookerDto booker;
@@ -50,8 +53,10 @@ class ItemServiceImplTest {
     void setUp() {
         was = LocalDateTime.now().minusDays(15);
         wasMinus = LocalDateTime.now().minusDays(17);
+        will = LocalDateTime.now().plusDays(2);
 
         userDto = userService.create(new UserDto(1L, "Ivan", "Ivanov@gmail.ru"));
+        userDto2 = userService.create(new UserDto(4L, "Pit", "pit@gmail.ru"));
 
         itemDto = itemService.create(userDto.getId(), new ItemDto(2L,"Fender", "electric guitar",
                 true, null, null, null, 5L));
@@ -134,6 +139,15 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void shouldUpdateItemWithWrongOwnerId() {
+        itemDto.setName("Stratocaster");
+        itemDto.setDescription("best guitar");
+        itemDto.setAvailable(true);
+
+        assertThrows(EntityUpdateException.class, () -> itemService.update(userDto2.getId(), itemDto.getId(), itemDto));
+    }
+
+    @Test
     void shouldCreateComment() {
         BookingDto bookingDto = new BookingDto(1L, wasMinus, was, BookingStatus.WAITING, itemDto.getId(), item, booker);
         bookingDto = bookingService.create(userDto.getId(), bookingDto);
@@ -147,6 +161,15 @@ class ItemServiceImplTest {
         assertThat(commentDto.getId(), equalTo(qComment.getId()));
         assertThat(commentDto.getText(), equalTo(qComment.getText()));
         assertThat(commentDto.getCreated(), equalTo(qComment.getCreated()));
+    }
+
+    @Test
+    void shouldNotCreateComment() {
+        BookingDto bookingDto = new BookingDto(1L, was, will, BookingStatus.WAITING, itemDto.getId(), item, booker);
+        bookingDto = bookingService.create(userDto.getId(), bookingDto);
+        bookingService.update(userDto.getId(), bookingDto.getId(), true);
+
+        assertThrows(RuntimeException.class, () -> itemService.createComment(userDto.getId(), itemDto.getId(), commentDto));
     }
 
 }

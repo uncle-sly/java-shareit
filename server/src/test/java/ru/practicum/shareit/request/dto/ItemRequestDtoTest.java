@@ -48,9 +48,7 @@ class ItemRequestDtoJsonTest {
                 .satisfies(description -> assertThat(description).isEqualTo(itemRequestDto.getDescription()));
 
         assertThat(result).extractingJsonPathValue("$.user")
-                .satisfies(userJson -> {
-                    assertThat(userJson.toString()).contains("John", "john@example.ru");
-                });
+                .satisfies(userJson -> assertThat(userJson.toString()).contains("John", "john@example.ru"));
 
         assertThat(result).extractingJsonPathValue("$.created")
                 .satisfies(created -> assertThat(created.toString()).isEqualTo(itemRequestDto.getCreated().toString()));

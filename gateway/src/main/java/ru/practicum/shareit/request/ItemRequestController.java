@@ -7,10 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-//import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.validation.OnCreate;
 
-import java.util.List;
 
 import static ru.practicum.shareit.utility.Constants.USER_ID;
 
@@ -20,7 +18,6 @@ import static ru.practicum.shareit.utility.Constants.USER_ID;
 @Slf4j
 @Validated
 public class ItemRequestController {
-//    private final ItemRequestService itemRequestService;
     private final ItemRequestClient itemRequestClient;
 
     //POST /requests — добавить новый запрос вещи
@@ -35,7 +32,6 @@ public class ItemRequestController {
     public ResponseEntity<Object> getUserRequestsList(@RequestHeader(USER_ID) long userId) {
         return itemRequestClient.getUserRequestsList(userId);
     }
-
 
     //    GET /requests/all — получить список запросов, созданных другими пользователями.
     @GetMapping("/all")

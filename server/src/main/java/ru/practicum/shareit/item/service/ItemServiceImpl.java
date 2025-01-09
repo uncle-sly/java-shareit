@@ -84,10 +84,12 @@ public class ItemServiceImpl implements ItemService {
         User itemOwner = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, " c ID = " + userId + ", не найден."));
 
-        ItemRequest itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElse(null);
         Item newItem = itemMapper.toItem(itemDto);
         newItem.setOwner(itemOwner);
-        newItem.setRequest(itemRequest);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElse(null);
+            newItem.setRequest(itemRequest);
+        }
 
         return itemMapper.toItemDto(itemRepository.save(newItem));
     }

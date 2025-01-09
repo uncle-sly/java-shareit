@@ -53,7 +53,7 @@ public class ItemClient extends BaseClient {
 
     public ResponseEntity<Object> createComment(Long userId, Long itemId, CommentDto commentDto) {
         Map<String, Object> parameters = Map.of("itemId", itemId);
-        return post("/{itemId}=itemId/comment", userId, parameters, commentDto);
+        return post("/{itemId}/comment", userId, parameters, commentDto);
     }
 
 }

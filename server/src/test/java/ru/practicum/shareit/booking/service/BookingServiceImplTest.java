@@ -12,7 +12,9 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.exception.EntityUpdateException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.exception.ValidationException;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
@@ -23,6 +25,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @Transactional
@@ -40,6 +43,7 @@ class BookingServiceImplTest {
     private BookingDto.BookerDto booker;
     private BookingDto.ItemDto item;
     private UserDto userDto;
+    private UserDto userDto2;
     private ItemDto itemDto;
 
     @BeforeEach
@@ -47,6 +51,8 @@ class BookingServiceImplTest {
         now = LocalDateTime.now();
         nowPlusDay = now.plusDays(1);
         userDto = userService.create(new UserDto(1L, "Ivan", "Ivanov@gmail.ru"));
+        userDto2 = userService.create(new UserDto(4L, "Pit", "pit@gmail.ru"));
+
         itemDto = itemService.create(userDto.getId(), new ItemDto(2L,"Item", "description",
                 true, null, null, null, 5L));
         item = new BookingDto.ItemDto(itemDto.getId(), itemDto.getName());
@@ -67,6 +73,15 @@ class BookingServiceImplTest {
         assertThat(booking.getStatus(), equalTo(BookingStatus.WAITING));
         assertThat(booking.getStart(), equalTo(bookingDto.getStart()));
         assertThat(booking.getEnd(), equalTo(bookingDto.getEnd()));
+    }
+
+    @Test
+    void shouldNotCreateBookingAndThrowException() {
+        BookingDto bookingDto = new BookingDto(1L, now, nowPlusDay, BookingStatus.WAITING, itemDto.getId(), item, booker);
+        itemDto.setAvailable(false);
+        itemService.update(userDto.getId(), itemDto.getId(), itemDto);
+
+        assertThrows(RuntimeException.class, () -> bookingService.create(userDto.getId(), bookingDto));
     }
 
     @Test
@@ -99,6 +114,14 @@ class BookingServiceImplTest {
         assertThat(update2.getItem().id(), equalTo(bookingDto2.getItem().id()));
         assertThat(update2.getItem().name(), equalTo(bookingDto2.getItem().name()));
     }
+    @Test
+    void shouldNotUpdateBookingAndThrowException() {
+        BookingDto bookingDto = new BookingDto(1L, now, nowPlusDay, BookingStatus.WAITING, itemDto.getId(), item, booker);
+        bookingDto = bookingService.create(userDto.getId(), bookingDto);
+
+        Long bookingId = bookingDto.getId();
+        assertThrows(EntityUpdateException.class, () -> bookingService.update(userDto2.getId(), bookingId, true));
+    }
 
     @Test
     void shouldGetById() {
@@ -114,6 +137,15 @@ class BookingServiceImplTest {
         assertThat(getResult.getStart(), equalTo(bookingDto.getStart()));
         assertThat(getResult.getEnd(), equalTo(bookingDto.getEnd()));
         assertThat(getResult.getBooker(), equalTo(bookingDto.getBooker()));
+    }
+
+    @Test
+    void shouldNotGetByIdAndThrowException() {
+        BookingDto bookingDto = new BookingDto(1L, now, nowPlusDay, BookingStatus.WAITING, itemDto.getId(), item, booker);
+        bookingDto = bookingService.create(userDto.getId(), bookingDto);
+
+        Long bookingId = bookingDto.getId();
+        assertThrows(ValidationException.class, () -> bookingService.getById(userDto2.getId(), bookingId));
     }
 
     @Test

@@ -22,18 +22,6 @@ import static ru.practicum.shareit.utility.Constants.USER_ID;
 public class BookingController {
 	private final BookingClient bookingClient;
 
-/*
-	@GetMapping
-	public ResponseEntity<Object> getBookings(@RequestHeader("X-Sharer-User-Id") long userId,
-			@RequestParam(name = "state", defaultValue = "all") String stateParam,
-			@PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-			@Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
-		BookingState state = BookingState.from(stateParam)
-				.orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
-		log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
-		return bookingClient.getBookings(userId, state, from, size);
-	}
-*/
 
 	// GET /bookings?state={state}
 	// Получение списка всех бронирований текущего пользователя.
@@ -59,14 +47,6 @@ public class BookingController {
 		return bookingClient.getOwnerItemsBookings(userId, state);
 	}
 
-/*
-	@PostMapping
-	public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
-										   @RequestBody @Valid BookItemRequestDto requestDto) {
-		log.info("Creating booking {}, userId={}", requestDto, userId);
-		return bookingClient.bookItem(userId, requestDto);
-	}
-*/
 
 	//После создания запрос находится в статусе WAITING — «ожидает подтверждения».
 	@PostMapping
@@ -85,13 +65,6 @@ public class BookingController {
 
 		return bookingClient.update(userId, bookingId, approved);
 	}
-/*
-	@GetMapping("/{bookingId}")
-	public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") long userId,
-											 @PathVariable Long bookingId) {
-		log.info("Get booking {}, userId={}", bookingId, userId);
-		return bookingClient.getBooking(userId, bookingId);
-	}*/
 
 	// GET /bookings/{bookingId}
 	// Получение данных о конкретном бронировании (включая его статус). Может быть выполнено либо автором бронирования,
@@ -102,6 +75,5 @@ public class BookingController {
 
 		return bookingClient.getById(userId, bookingId);
 	}
-
 
 }

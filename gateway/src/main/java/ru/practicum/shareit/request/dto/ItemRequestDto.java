@@ -5,13 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.shareit.item.dto.ItemAnswerDto;
 import ru.practicum.shareit.user.dto.UserDto;
-//import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.validation.OnCreate;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -27,7 +24,5 @@ public class ItemRequestDto {
     private UserDto user;
 
     private LocalDateTime created;
-
-//    private List<ItemAnswerDto> items;
 
 }

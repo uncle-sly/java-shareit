@@ -7,10 +7,6 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.EntityNotFoundException;
-import ru.practicum.shareit.exception.EntityUpdateException;
-//import ru.practicum.shareit.item.exception.ValidationException;
-//import ru.practicum.shareit.user.exception.UserEmailExistedException;
 
 import java.util.List;
 
@@ -41,34 +37,6 @@ public class ErrorHandlingControllerAdvice {
         log.error("MissingRequestHeaderException: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
-
-    @ExceptionHandler({EntityNotFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse onEntityNotFoundException(final EntityNotFoundException e) {
-        log.error("EntityNotFoundException: {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-//    @ExceptionHandler({UserEmailExistedException.class})
-//    @ResponseStatus(HttpStatus.CONFLICT)
-//    public ErrorResponse onUserEmailExistedException(final UserEmailExistedException e) {
-//        log.error("UserEmailExistedException: {}", e.getMessage());
-//        return new ErrorResponse(e.getMessage());
-//    }
-
-    @ExceptionHandler({EntityUpdateException.class})
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse onEntityUpdateException(final EntityUpdateException e) {
-        log.error("EntityUpdateException: {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-//    @ExceptionHandler({ValidationException.class})
-//    @ResponseStatus(HttpStatus.FORBIDDEN)
-//    public ErrorResponse onValidationException(final ValidationException e) {
-//        log.error("ValidationException: {}", e.getMessage());
-//        return new ErrorResponse(e.getMessage());
-//    }
 
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

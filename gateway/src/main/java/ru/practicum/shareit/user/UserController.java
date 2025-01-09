@@ -8,11 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-//import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validation.OnCreate;
 import ru.practicum.shareit.validation.OnUpdate;
 
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -21,7 +19,6 @@ import java.util.List;
 @Validated
 public class UserController {
 
-//    private final UserService userService;
     private final UserClient userClient;
 
     @GetMapping

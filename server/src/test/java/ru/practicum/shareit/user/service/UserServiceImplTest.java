@@ -15,7 +15,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -41,6 +40,17 @@ class UserServiceImplTest {
         assertThat(users.getFirst().getId(), equalTo(userDto.getId()));
         assertThat(users.getLast().getId(), equalTo(userDto2.getId()));
     }
+
+    @Test
+    void shouldGetUserById() {
+        UserDto user = userService.getById(userDto.getId());
+        assertThat(user, notNullValue());
+        assertThat(user.getId(), equalTo(userDto.getId()));
+        assertThat(user.getName(), equalTo(userDto.getName()));
+        assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+
+    }
+
 
     @Test
     void shouldCreateUser() {

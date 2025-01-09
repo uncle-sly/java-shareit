@@ -21,7 +21,6 @@ import static ru.practicum.shareit.utility.Constants.USER_ID;
 @Validated
 public class ItemController {
 
-//    private final ItemService itemService;
     private final ItemClient  itemClient;
 
     @GetMapping
