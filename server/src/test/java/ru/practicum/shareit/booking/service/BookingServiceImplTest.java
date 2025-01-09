@@ -61,7 +61,6 @@ class BookingServiceImplTest {
 
     @Test
     void shouldCreateBooking() {
-
         BookingDto bookingDto = new BookingDto(1L, now, nowPlusDay, BookingStatus.WAITING, itemDto.getId(), item, booker);
         bookingDto = bookingService.create(userDto.getId(), bookingDto);
 
