@@ -113,6 +113,7 @@ class BookingServiceImplTest {
         assertThat(update2.getItem().id(), equalTo(bookingDto2.getItem().id()));
         assertThat(update2.getItem().name(), equalTo(bookingDto2.getItem().name()));
     }
+
     @Test
     void shouldNotUpdateBookingAndThrowException() {
         BookingDto bookingDto = new BookingDto(1L, now, nowPlusDay, BookingStatus.WAITING, itemDto.getId(), item, booker);
