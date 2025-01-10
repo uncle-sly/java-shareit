@@ -9,12 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.exception.UserEmailExistedException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -48,7 +50,6 @@ class UserServiceImplTest {
         assertThat(user.getId(), equalTo(userDto.getId()));
         assertThat(user.getName(), equalTo(userDto.getName()));
         assertThat(user.getEmail(), equalTo(userDto.getEmail()));
-
     }
 
 
@@ -67,6 +68,13 @@ class UserServiceImplTest {
     }
 
     @Test
+    void shouldNotCreateUserAndThrowException() {
+        UserDto newUser = new UserDto(3L, "Oleg", "Mike@gmail.ru");
+
+        assertThrows(UserEmailExistedException.class, () -> userService.create(newUser));
+    }
+
+    @Test
     void shouldUpdateUser() {
         UserDto newUser = new UserDto(3L, "Oleg", "Oleg@gmail.ru");
         newUser = userService.create(newUser);
@@ -81,6 +89,32 @@ class UserServiceImplTest {
         assertThat(qUser.getId(), equalTo(newUser.getId()));
         assertThat(qUser.getName(), equalTo(newUser.getName()));
         assertThat(qUser.getEmail(), equalTo(newUser.getEmail()));
+    }
+
+    @Test
+    void shouldNotUpdateUser() {
+        userDto.setName(null);
+        userDto.setEmail(null);
+        userDto = userService.update(userDto.getId(), userDto);
+
+        TypedQuery<User> query = entityManager.createQuery("select u from User u where u.id = :id", User.class);
+        User qUser = query.setParameter("id", userDto.getId()).getSingleResult();
+
+        assertThat(qUser, notNullValue());
+        assertThat(qUser.getId(), equalTo(userDto.getId()));
+        assertThat(qUser.getName(), equalTo(userDto.getName()));
+        assertThat(qUser.getEmail(), equalTo(userDto.getEmail()));
+    }
+
+    @Test
+    void shouldNotUpdateUserAndThrowException() {
+        UserDto newUser = new UserDto(3L, "Oleg", "Oleg@gmail.ru");
+        newUser = userService.create(newUser);
+        newUser.setName("German");
+        newUser.setEmail("Mike@gmail.ru");
+        UserDto finalNewUser = newUser;
+
+        assertThrows(UserEmailExistedException.class, () -> userService.update(finalNewUser.getId(), finalNewUser));
     }
 
     @Test

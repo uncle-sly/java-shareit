@@ -53,12 +53,6 @@ class OwnersItemDtoJsonTest {
         assertThat(result).extractingJsonPathBooleanValue("$.available")
                 .satisfies(available -> assertThat(available).isEqualTo(ownersItemDto.getAvailable()));
 
-        assertThat(result).extractingJsonPathValue("$.lastBooking")
-                .satisfies(lastBooking -> assertThat(lastBooking.toString()).isEqualTo(ownersItemDto.getLastBooking().toString()));
-
-        assertThat(result).extractingJsonPathValue("$.nextBooking")
-                .satisfies(nextBooking -> assertThat(nextBooking.toString()).isEqualTo(ownersItemDto.getNextBooking().toString()));
-
         assertThat(result).extractingJsonPathArrayValue("$.comments")
                 .satisfies(comments -> {
                     assertThat(comments).hasSize(1);

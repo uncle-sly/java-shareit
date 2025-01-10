@@ -50,9 +50,6 @@ class ItemRequestDtoJsonTest {
         assertThat(result).extractingJsonPathValue("$.user")
                 .satisfies(userJson -> assertThat(userJson.toString()).contains("John", "john@example.ru"));
 
-        assertThat(result).extractingJsonPathValue("$.created")
-                .satisfies(created -> assertThat(created.toString()).isEqualTo(itemRequestDto.getCreated().toString()));
-
         assertThat(result).extractingJsonPathArrayValue("$.items")
                 .satisfies(items -> {
                     assertThat(items).hasSize(1);

@@ -57,7 +57,7 @@ class BookingControllerTest {
                         .header(USER_ID, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(bookingDto)))
-                .andExpect(status().isCreated()) // 201
+                .andExpect(status().isCreated())
                 .andExpect(content().json(objectMapper.writeValueAsString(bookingDto)));
     }
 
@@ -137,6 +137,19 @@ class BookingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of(bookingDto))));
+    }
+
+    @Test
+    void getOwnerItemsBookingsWithInvalidState() throws Exception {
+        String invalidState = "INVALID_STATE";
+
+        when(bookingService.getOwnerItemsBookings(eq(1L), any())).thenReturn(List.of(bookingDto));
+        mockMvc.perform(get("/bookings/owner")
+                .header(USER_ID, 1L)
+                .param("state", invalidState)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Некорректный state: " + invalidState));
     }
 
 }

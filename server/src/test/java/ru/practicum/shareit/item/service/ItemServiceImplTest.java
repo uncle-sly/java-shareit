@@ -23,8 +23,7 @@ import ru.practicum.shareit.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -79,6 +78,23 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void shouldGetOwnersItemsWithBookingsDate() {
+        BookingDto bookingDto = new BookingDto(1L, was, will, BookingStatus.WAITING, itemDto.getId(), item, booker);
+        bookingService.create(userDto.getId(), bookingDto);
+        BookingDto bookingDto2 = new BookingDto(2L, will.plusDays(5), will.plusDays(10), BookingStatus.WAITING, itemDto.getId(), item, booker);
+        bookingService.create(userDto.getId(), bookingDto2);
+
+        List<OwnersItemDto> getResult = itemService.getOwnersItems(userDto.getId());
+
+        assertThat(getResult, notNullValue());
+        assertThat(getResult.getFirst().getId(), equalTo(itemDto.getId()));
+        assertThat(getResult.getFirst().getName(), equalTo(itemDto.getName()));
+        assertThat(getResult.getFirst().getDescription(), equalTo(itemDto.getDescription()));
+        assertThat(getResult.getFirst().getLastBooking(),equalTo(bookingDto.getStart()));
+        assertThat(getResult.getFirst().getNextBooking(),equalTo(bookingDto2.getStart()));
+    }
+
+    @Test
     void shouldGetById() {
 
         ItemDto getResult = itemService.getById(userDto.getId(), itemDto.getId());
@@ -122,10 +138,43 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void shouldCreateItemWithNullRequestId() {
+        ItemDto userItem = new ItemDto(3L,"Piano", "new electric piano",
+                true, LocalDateTime.of(2024,12,12,0,0), null, null, null);
+        userItem = itemService.create(userDto.getId(), userItem);
+
+        TypedQuery<Item> query = entityManager.createQuery("select i from Item i where i.id = :id", Item.class);
+        Item qItem = query.setParameter("id", userItem.getId()).getSingleResult();
+        assertThat(qItem, notNullValue());
+        assertThat(userItem.getId(), equalTo(qItem.getId()));
+        assertThat(userItem.getName(), equalTo(qItem.getName()));
+        assertThat(userItem.getDescription(), equalTo(qItem.getDescription()));
+        assertThat(userItem.getAvailable(), equalTo(qItem.getAvailable()));
+        assertThat(userItem.getRequestId(), nullValue());
+    }
+
+    @Test
     void shouldUpdateItem() {
         itemDto.setName("Stratocaster");
         itemDto.setDescription("best guitar");
         itemDto.setAvailable(true);
+        itemDto = itemService.update(userDto.getId(), itemDto.getId(), itemDto);
+
+        TypedQuery<Item> query = entityManager.createQuery("select i from Item i where i.id = :id", Item.class);
+        Item qItem = query.setParameter("id", itemDto.getId()).getSingleResult();
+
+        assertThat(qItem, notNullValue());
+        assertThat(itemDto.getId(), equalTo(qItem.getId()));
+        assertThat(itemDto.getName(), equalTo(qItem.getName()));
+        assertThat(itemDto.getDescription(), equalTo(qItem.getDescription()));
+        assertThat(itemDto.getAvailable(), equalTo(qItem.getAvailable()));
+    }
+
+    @Test
+    void shouldNotUpdateItem() {
+        itemDto.setName(null);
+        itemDto.setDescription(null);
+        itemDto.setAvailable(null);
         itemDto = itemService.update(userDto.getId(), itemDto.getId(), itemDto);
 
         TypedQuery<Item> query = entityManager.createQuery("select i from Item i where i.id = :id", Item.class);

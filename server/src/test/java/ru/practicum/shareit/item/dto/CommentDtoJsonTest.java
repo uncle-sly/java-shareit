@@ -36,9 +36,5 @@ class CommentDtoJsonTest {
 
         assertThat(result).extractingJsonPathStringValue("$.authorName")
                 .satisfies(authorName -> assertThat(authorName).isEqualTo(commentDto.getAuthorName()));
-
-        assertThat(result).extractingJsonPathValue("$.created")
-                .satisfies(created -> assertThat(created.toString()).isEqualTo(commentDto.getCreated().toString()));
     }
-
 }

@@ -124,6 +124,17 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void shouldNotUpdateBookingWithWrongStatusAndThrowException() {
+        BookingDto bookingDto = new BookingDto(1L, now, nowPlusDay, BookingStatus.CANCELED, itemDto.getId(), item, booker);
+        bookingDto = bookingService.create(userDto.getId(), bookingDto);
+        bookingDto.setStatus(BookingStatus.CANCELED);
+        Long bookingId = bookingDto.getId();
+        bookingService.update(userDto.getId(), bookingId, true);
+
+        assertThrows(EntityUpdateException.class, () -> bookingService.update(userDto.getId(), bookingId, true));
+    }
+
+    @Test
     void shouldGetById() {
 
         BookingDto bookingDto = new BookingDto(1L, now, nowPlusDay, BookingStatus.WAITING, itemDto.getId(), item, booker);
